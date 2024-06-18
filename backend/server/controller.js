@@ -16,7 +16,9 @@ const runScheduler = async (req, res) => {
     let formattedString = ""
     const processList = req.body.processes;
     processList.forEach(process => {
-        formattedString += `${process.pid} ${process.atime} ${process.btime} \n`
+        formattedString += `${process.pid} ${process.atime} ${process.btime} `
+        if(process.tickets) formattedString += `${process.tickets}`
+        formattedString += "\n"
     })
     fs.writeFile(SCHEDULER_CONFIG_PATH, formattedString, (err) => {
         console.log("god please")

@@ -22,10 +22,21 @@ struct proc
         arrival_time = atime;
         burst_time = btime;
         // default, will be computed at the end of process lifecycle
-        firstrun_time = 0;
-        completion_time = 0;
-        response_time = 0;
-        turnaround_time = 0;
+        firstrun_time = -1;
+        completion_time = -1;
+        response_time = -1;
+        turnaround_time = -1;
         time_to_completion = burst_time;
+    }
+};
+
+//the object for fair share schedulers - contains a ticket metric
+struct ticketed_proc {
+    proc process;
+    int tickets;
+    void init_proc(int id, int atime, int btime, int t)
+    {
+        process.init_proc(id, atime, btime);
+        tickets = t;
     }
 };

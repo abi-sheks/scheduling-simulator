@@ -1,7 +1,7 @@
-FILES := ./src/first-come-first-serve.cpp
-OBJECTS := first-come-first-serve.o
+FILES := ./src/scheduler_interface.cpp
+OBJECTS :=scheduler_interface.o
 
-compile:./src/first-come-first-serve.cpp
+compile:./src/scheduler_interface.cpp
 	g++ -c $(FILES) 
 	g++ $(OBJECTS) -o scheduler
 
