@@ -4,8 +4,10 @@
 #include <sstream>
 #include "./process.h"
 #include <string>
+#include "./paths.h"
 
-struct metrics {
+struct metrics
+{
     int total_tat;
     int total_rt;
     int total_ct;
@@ -13,11 +15,13 @@ struct metrics {
     float avg_rt;
     float avg_tat;
 };
+
+
 std::vector<proc> get_processes()
 {
-    //expects process information in BASE_BACKEND_DIR/process_info.txt
-    //process_info should have newline separated values pid<space>arrival_time<space>burst_time
-    std::ifstream config_file("/root/scheduling-simulator/backend/lib/process_info.txt");
+    // expects process information in BASE_BACKEND_DIR/process_info.txt
+    // process_info should have newline separated values pid<space>arrival_time<space>burst_time
+    std::ifstream config_file(input_file_path);
     std::vector<proc> processes;
     int pid;
     int atime;
@@ -39,16 +43,16 @@ std::vector<proc> get_processes()
 }
 std::vector<ticketed_proc> get_ticketed_processes()
 {
-    //expects process information in BASE_BACKEND_DIR/process_info.txt
-    //process_info should have newline separated values pid<space>arrival_time<space>burst_time
-    std::ifstream config_file("/root/scheduling-simulator/backend/lib/process_info.txt");
+    // expects process information in BASE_BACKEND_DIR/process_info.txt
+    // process_info should have newline separated values pid<space>arrival_time<space>burst_time
+    std::ifstream config_file(input_file_path);
     std::vector<ticketed_proc> processes;
     int pid;
     int atime;
     int btime;
     int tickets;
     std::string line;
-    while (std::getline(config_file, line))
+    while(std::getline(config_file, line))
     {
         std::istringstream iss(line);
         if (!(iss >> pid >> atime >> btime >> tickets))
@@ -65,25 +69,26 @@ std::vector<ticketed_proc> get_ticketed_processes()
 
 metrics calculate_metrics(std::vector<proc> processes)
 {
-        metrics result;
-        int proc_count = processes.size();
-        if(proc_count == 0) return result;
-        result.total_ct = 0;
-        for (auto process : processes)
-            result.total_ct += process.completion_time;
-        result.total_tat = 0;
-        for (auto process : processes)
-            result.total_tat += process.turnaround_time;
-        result.total_rt = 0;
-        for (auto process : processes)
-            result.total_rt += process.response_time;
-        result.avg_ct = (float)result.total_ct / proc_count;
-        result.avg_tat = (float)result.total_tat / proc_count;
-        result.avg_rt = (float)result.total_rt / proc_count;
+    metrics result;
+    int proc_count = processes.size();
+    if (proc_count == 0)
         return result;
+    result.total_ct = 0;
+    for (auto process : processes)
+        result.total_ct += process.completion_time;
+    result.total_tat = 0;
+    for (auto process : processes)
+        result.total_tat += process.turnaround_time;
+    result.total_rt = 0;
+    for (auto process : processes)
+        result.total_rt += process.response_time;
+    result.avg_ct = (float)result.total_ct / proc_count;
+    result.avg_tat = (float)result.total_tat / proc_count;
+    result.avg_rt = (float)result.total_rt / proc_count;
+    return result;
 }
 
-void write_to_output_file(
+void write_metrics_to_output_file(
     int total_ta,
     int total_r,
     int total_comp,
@@ -91,10 +96,19 @@ void write_to_output_file(
     float avg_r,
     float avg_comp,
     std::ios_base::openmode mode,
-    std::string outfile_path
-)
+    std::string outfile_path)
 {
     std::ofstream out_file(outfile_path, mode);
     out_file << total_ta << " " << total_r << " " << total_comp << " " << avg_ta << " " << avg_r << " " << avg_comp << "\n";
+    out_file.close();
+}
+
+void write_gantt_data(std::vector<proc> processes, std::string outfile_path)
+{
+    std::ofstream out_file(outfile_path);
+    for(auto proc : processes)
+    {
+        out_file << proc.pid << " " << proc.arrival_time << " " << proc.firstrun_time << " " << proc.completion_time << "\n";  
+    }
     out_file.close();
 }

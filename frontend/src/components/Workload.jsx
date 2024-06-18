@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import { List, ListItem, Typography, TextField, Button, IconButton, Autocomplete, Dialog, DialogTitle } from '@mui/material'
 import { Link as RRLink } from 'react-router-dom'
 import DeleteIcon from "@mui/icons-material/Delete"
@@ -43,7 +43,7 @@ const Workload = () => {
     }
     const rowList = workload.map(job => {
         return (
-            <Row arrivalTime={job.arrivalTime} burstTime={job.burstTime} tickets={job.tickets} id={job.pid} heading={false} handleDelete={handleDeleteProcess} />
+            <Row key={job.pid} arrivalTime={job.arrivalTime} burstTime={job.burstTime} tickets={job.tickets} id={job.pid} heading={false} handleDelete={handleDeleteProcess} />
         )
     })
     const schedulingOptions = [
@@ -53,6 +53,9 @@ const Workload = () => {
         { label: "Round Robin" },
         { label: "Lottery Scheduling" },
     ]
+    // useEffect(() => {
+    //     setAlgo(schedulingOptions[0])
+    // }, [schedulingOptions])
     return (
         <List sx={{ width: "100%", display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center" }}>
             <Row id="Process ID" arrivalTime="Arrival Time" burstTime="Burst Time" tickets="Tickets" heading={true} />
@@ -63,16 +66,19 @@ const Workload = () => {
                 <TextField value={burstTime} onChange={(e) => setBurstTime(e.target.value)} sx={{ width: "25%", padding: "1rem" }} />
                 <TextField value={tickets} onChange={(e) => setTickets(e.target.value)} sx={{ width: "25%", padding: "1rem" }} />
             </ListItem>
-            <Button sx={{ marginTop: '1rem' }}  onClick={handleAddProcess}>Add process</Button>
+            <Button sx={{ marginTop: '1rem' }} onClick={handleAddProcess}>Add process</Button>
             <ListItem sx={{ marginTop: '1rem', display: "flex", width: "80%", alignItems: "center", justifyContent: "center" }}>
-                <Button component={RRLink} to='/comparison' sx={{ marginTop: '1rem', marginRight : "1rem" }} variant="contained">Run all non-ticketed and compare</Button>
-                <Button sx={{ marginTop: '1rem', marginRight : "1rem" }} variant="outlined" onClick={() => setOpen(true)}>Run a specific algo</Button>
-                <TextField sx={{marginTop: '1rem'}} size='small' label="Scheduling quantum (for fair share schedulers)" value={quantum} onChange={(e) => setQuantum(e.target.value)} />
+                <Button component={RRLink} to='/comparison' sx={{ marginTop: '1rem', marginRight: "1rem" }} variant="contained">Run all non-ticketed and compare</Button>
+                <Button sx={{ marginTop: '1rem', marginRight: "1rem" }} variant="outlined" onClick={() => setOpen(true)}>Run a specific algo</Button>
+                <TextField sx={{ marginTop: '1rem' }} size='small' label="Scheduling quantum (for fair share schedulers)" value={quantum} onChange={(e) => setQuantum(e.target.value)} />
             </ListItem>
             <Dialog open={isOpen} onClose={() => setOpen(false)}>
-                <DialogTitle sx={{textAlign : "center"}}>Choose the specific algorithm</DialogTitle>
-                <Autocomplete disablePortal options={schedulingOptions} sx={{width :"300px", margin : "2rem"}} renderInput={(params) => <TextField {...params} label="Movie" />} value={schedulingAlgo} onChange={(e) => setAlgo(e.target.value)}  />
-                <Button sx={{margin : "1rem"}}>Simulate</Button>
+                <DialogTitle sx={{ textAlign: "center" }}>Choose the specific algorithm</DialogTitle>
+                <Autocomplete disablePortal options={schedulingOptions} sx={{ width: "300px", margin: "2rem" }} renderInput={(params) => <TextField {...params} label="Movie" />} value={schedulingAlgo} onChange={(e, newValue) => {
+                    setAlgo(newValue)
+                }}
+                />
+                <Button component={RRLink} to="/analyze" sx={{ margin: "1rem" }}>Simulate</Button>
             </Dialog>
         </List>
     )

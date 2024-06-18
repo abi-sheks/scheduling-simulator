@@ -38,11 +38,14 @@ const ComparisonDashboard = () => {
                         }
                     }
                 )).data
-                console.log(response)
                 const resultList = response.data.split("\n")
                 resultList.pop()
                 //the metrics are in order total - average and in tat - rt - ct
                 //normalize the metrics to have keys
+                let besttat = -1
+                let besttatalgo
+                let bestrt = -1
+                let bestrtalgo
                 const resultWKeys = resultList.map((result, idx) => {
                     let algo = ""
                     if (idx === 0) algo = "FCFS"
@@ -51,22 +54,22 @@ const ComparisonDashboard = () => {
                     if (idx === 3) algo = "RR"
                     const metrics = result.split(" ")
                     //lesser === better for these times
-                    if (bestTat === -1) {
-                        setBestTat(metrics[3])
-                        setBestTatAlgo(idxmap.get(idx))
+                    if (besttat === -1) {
+                        besttat = metrics[3]
+                        besttatalgo = idxmap.get(idx)
                     }
-                    if (bestRt === -1) {
-                        setBestRt(metrics[4])
-                        setBestRtAlgo(idxmap.get(idx))
+                    if (bestrt === -1) {
+                        bestrt = metrics[4]
+                        bestrtalgo = idxmap.get(idx)
 
                     }
-                    if (metrics[3] < bestTat) {
-                        setBestTat(metrics[3])
-                        setBestTatAlgo(idxmap.get(idx))
+                    if (metrics[3] < besttat) {
+                        besttat = metrics[3]
+                        besttatalgo = idxmap.get(idx)
                     }
-                    if (metrics[4] < bestRt) {
-                        setBestRt(metrics[4])
-                        setBestRtAlgo(idxmap.get(idx))
+                    if (metrics[4] < bestrt) {
+                        bestrt = metrics[4]
+                        bestrtalgo = idxmap.get(idx)
                     }
                     return {
                         type: algo,
@@ -78,7 +81,10 @@ const ComparisonDashboard = () => {
                         "Average Completion Time": metrics[5],
                     }
                 })
-                console.log(resultWKeys)
+                setBestTat(besttat)
+                setBestRt(bestrt)
+                setBestRtAlgo(bestrtalgo)
+                setBestTatAlgo(besttatalgo)
                 setMetrics(resultWKeys)
             }
             catch (error) {

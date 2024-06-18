@@ -3,8 +3,10 @@
 #include "../include/round_robin.h"
 #include "../include/lottery_scheduling.h"
 #include "../include/shortest_ttc_first.h"
+#include "../include/process.h"
+#include "../include/utils.h"
+#include "../include/paths.h"
 
-std::string  file_path = "/root/scheduling-simulator/lib/outfile.txt";
 
 int main(int argc, char *argv[])
 {
@@ -15,28 +17,28 @@ int main(int argc, char *argv[])
         return -1;
     }
     std::string policy = argv[2];
-    if (policy == "fcfs")
+    if (policy == "fcfs")  
     {
-        fcfs::simulate(std::ios::out, file_path);
+        fcfs::simulate(std::ios::out, individual_metrics_file_path, gantt_file_path);
     }
     else if (policy == "sjf")
     {
-        sjf::simulate(std::ios::out, file_path);
+        sjf::simulate(std::ios::out, individual_metrics_file_path, gantt_file_path);
     }
     else if (policy == "stcf")
     {
-        stcf::simulate(std::ios::out, file_path);
+        stcf::simulate(std::ios::out, individual_metrics_file_path, gantt_file_path);
     }
     else if (policy == "rr")
     {
         //round robin requires an additional argument of scheduling quantum
         if(argc < 4) return -1;
-        rr::simulate(std::string(argv[3]), std::ios::out, file_path);
+        rr::simulate(std::string(argv[3]), std::ios::out, individual_metrics_file_path, gantt_file_path);
     }
     else if(policy == "lottery")
     {
         if(argc < 4) return -1;
-        lottery::simulate(std::string(argv[3]), std::ios::out, file_path);
+        lottery::simulate(std::string(argv[3]), std::ios::out, individual_metrics_file_path, gantt_file_path);
     }
     else
     {

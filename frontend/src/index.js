@@ -8,6 +8,7 @@ import '@fontsource/roboto/400.css';
 import '@fontsource/roboto/500.css';
 import '@fontsource/roboto/700.css';
 import ComparisonDashboard from './components/ComparisonDashboard';
+import IndividualDashboard from './components/IndividualDashboard';
 
 const router = createBrowserRouter([
   {
@@ -21,6 +22,10 @@ const router = createBrowserRouter([
       {
         path : "/comparison",
         element : <ComparisonDashboard />
+      },
+      {
+        path : "/analyze",
+        element : <IndividualDashboard />
       }
     ]
   }

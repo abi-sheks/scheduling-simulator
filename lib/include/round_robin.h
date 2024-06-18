@@ -14,13 +14,14 @@ namespace rr
         return p1.arrival_time < p2.arrival_time;
     }
     // the scheduling quantum parameter will hereby be referred to as a time_slice
-    void simulate(std::string time_slice, std::ios_base::openmode mode, std::string file_path)
+    void simulate(std::string time_slice, std::ios_base::openmode mode, std::string metrics_file_path, std::string gantt_file_path)
     {
         int ts = atoi(time_slice.c_str());
         std::vector<proc> processes = get_processes();
-
         std::sort(processes.begin(), processes.end(), compare);
         int proc_count = processes.size();
+        if (proc_count == 0)
+            return;
 
         // just keep iterating for every time_slice until all processes are complete
         int incomplete_processes = proc_count;
@@ -36,17 +37,17 @@ namespace rr
         }
         while (incomplete_processes)
         {
-            //the two edge cases need to ba handled differently as the scheduler will respond differently
+            // the two edge cases need to ba handled differently as the scheduler will respond differently
             if (processes[ptr].time_to_completion == 0)
             {
-                //simply advance pointer and check
+                // simply advance pointer and check
                 ptr = (ptr + 1) % proc_count;
                 continue;
             }
-            if(processes[ptr].arrival_time > current_time)
+            if (processes[ptr].arrival_time > current_time)
             {
-                //all subsequent processes are unreachable as well
-                //the scheduler will idle
+                // all subsequent processes are unreachable as well
+                // the scheduler will idle
                 current_time++;
                 continue;
             }
@@ -74,6 +75,8 @@ namespace rr
 
         // return metrics
         std::cout << result.avg_tat << " " << result.avg_rt << " " << result.total_tat << " " << result.total_rt << "\n";
-        write_to_output_file(result.total_tat, result.total_rt, result.total_ct, result.avg_tat, result.avg_rt, result.avg_ct, mode, file_path);
+        write_metrics_to_output_file(result.total_tat, result.total_rt, result.total_ct, result.avg_tat, result.avg_rt, result.avg_ct, mode, metrics_file_path);
+        if (gantt_file_path != "")
+            write_gantt_data(processes, gantt_file_path);
     }
 }
