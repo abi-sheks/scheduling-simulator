@@ -13,7 +13,7 @@ namespace stcf
         // in case of identical arrival time, they will be arbitrarily processed
         return p1.arrival_time < p2.arrival_time;
     }
-    void simulate()
+    void simulate(std::ios_base::openmode mode, std::string file_path)
     {
         std::vector<proc> processes = get_processes();
         std::sort(processes.begin(), processes.end(), compare);
@@ -65,6 +65,6 @@ namespace stcf
 
         // return metrics
         std::cout << result.avg_tat << " " << result.avg_rt << " " << result.total_tat << " " << result.total_rt << "\n";
-        write_to_output_file(result.total_tat, result.total_rt, result.total_ct, result.avg_tat, result.avg_rt, result.avg_ct);
+        write_to_output_file(result.total_tat, result.total_rt, result.total_ct, result.avg_tat, result.avg_rt, result.avg_ct, mode, file_path);
     }
 }

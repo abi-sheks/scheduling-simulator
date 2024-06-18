@@ -1,79 +1,24 @@
-const SCHEDULER_EXE_PATH = "/root/scheduling-simulator/backend/lib/scheduler"
-const SCHEDULER_OUTPUT_PATH = "/root/scheduling-simulator/backend/lib/outfile.txt"
-const SCHEDULER_CONFIG_PATH = "/root/scheduling-simulator/backend/lib/process_info.txt"
-const fs = require('fs')
-const { spawn } = require('node:child_process')
-const { exec } = require('child_process')
-const { StatusCodes } = require('http-status-codes');
-const { STATUS_CODES } = require('http')
-
+const SCHEDULER_EXE_PATH = "/root/scheduling-simulator/lib/scheduler"
+const BULK_METRICS_EXE_PATH = "/root/scheduling-simulator/lib/bulk_metrics"
+const SCHEDULER_OUTPUT_PATH = "/root/scheduling-simulator/lib/outfile.txt"
+const METRICS_OUTPUT_PATH = "/root/scheduling-simulator/lib/metrics_outfile.txt"
+const SCHEDULER_CONFIG_PATH = "/root/scheduling-simulator/lib/process_info.txt"
+const {performIPC} = require('./utils')
 
 const ping = (req, res) => {
     res.status(StatusCodes.OK).json({ "message": "up and running" });
 }
+
+const runAllAlgorithms = async (req, res) => {
+    //todo : bad practice sending req and res into util, rectify
+    await performIPC(req, res, SCHEDULER_CONFIG_PATH, BULK_METRICS_EXE_PATH, METRICS_OUTPUT_PATH)
+}
 const runScheduler = async (req, res) => {
-    //write the parameters to a file and run the scheduler
-    let formattedString = ""
-    const processList = req.body.processes;
-    processList.forEach(process => {
-        formattedString += `${process.pid} ${process.atime} ${process.btime} `
-        if(process.tickets) formattedString += `${process.tickets}`
-        formattedString += "\n"
-    })
-    fs.writeFile(SCHEDULER_CONFIG_PATH, formattedString, (err) => {
-        console.log("god please")
-        if (err) {
-            console.log("write fucked")
-            res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({ "message": "ERROR IN SCHEDULER ACTION." })
-        }
-        else {
-            // const scheduler = spawn(SCHEDULER_EXE_PATH)
-            // scheduler.stdout.on('data', (data) => {
-            //     console.log(`stdout: ${data}`);
-            //     fs.readFileSync(SCHEDULER_OUTPUT_PATH, { encoding: 'utf8' }, (error, data) => {
-            //         if (error) {
-            //             console.log(error)
-            //             res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({ "message": `${error}` })   
-            //         }
-            //         console.log(data)
-            //         res.status(StatusCodes.OK).json({ "data": data })
-            //     })
-            // });
-
-            // scheduler.stderr.on('data', (data) => {
-            //     console.error(`stderr: ${data}`);
-            //     res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({ "message": "ERROR IN SCHEDULER ACTION." })
-            // });
-
-            // scheduler.on('close', (code) => {
-            //     console.log(`child process exited with code ${code}`);
-            // });
-            exec(SCHEDULER_EXE_PATH, (error, stdout, stderr) => {
-                if (!error) {
-                    //read from designated output file
-                    fs.readFile(SCHEDULER_OUTPUT_PATH, { encoding: 'utf8' }, (error, data) => {
-                        if (error) {
-                            console.log(error)
-                            res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({ "message": error })
-                        }
-                        console.log(data)
-                        res.status(StatusCodes.OK).json({ "data": data })
-                    })
-                } else {
-                    console.log("exec fucked")
-                    console.log(error)
-                    console.log(stderr)
-                    res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({ "message": "ERROR IN SCHEDULER ACTION." })
-                }
-            })
-        }
-
-    })
-
-
+    await performIPC(req, res, SCHEDULER_CONFIG_PATH, SCHEDULER_EXE_PATH, SCHEDULER_OUTPUT_PATH)
 }
 
 module.exports = {
     runScheduler,
+    runAllAlgorithms,
     ping
 }

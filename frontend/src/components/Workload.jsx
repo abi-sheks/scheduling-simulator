@@ -1,6 +1,8 @@
 import React, { useState } from 'react'
 import { List, ListItem, Typography, TextField, Button, IconButton, Autocomplete, Dialog, DialogTitle } from '@mui/material'
+import { Link as RRLink } from 'react-router-dom'
 import DeleteIcon from "@mui/icons-material/Delete"
+import { useOutletContext } from 'react-router'
 
 
 const Row = ({ id, arrivalTime, burstTime, tickets, heading, handleDelete }) => {
@@ -15,18 +17,22 @@ const Row = ({ id, arrivalTime, burstTime, tickets, heading, handleDelete }) => 
     </ListItem>
 }
 
-const Workload = ({ workload, setWorkload }) => {
+const Workload = () => {
+    const [workload, setWorkload, quantum, setQuantum, schedulingAlgo, setAlgo] = useOutletContext()
     const [isOpen, setOpen] = useState(false)
     const [pid, setPid] = useState()
     const [arrivalTime, setArrivalTime] = useState()
     const [burstTime, setBurstTime] = useState()
     const [tickets, setTickets] = useState()
-    const [schedulingAlgo, setAlgo] = useState("First Come First Serve")
 
     const handleAddProcess = () => {
         if (pid && arrivalTime && burstTime && tickets) {
             const newWorkload = [...workload, { pid: pid, tickets: tickets, burstTime: burstTime, arrivalTime: arrivalTime }]
             setWorkload(newWorkload)
+            setPid("")
+            setArrivalTime("")
+            setBurstTime("")
+            setTickets("")
         }
     }
     const handleDeleteProcess = (id, atime, btime, tickets) => {
@@ -57,10 +63,11 @@ const Workload = ({ workload, setWorkload }) => {
                 <TextField value={burstTime} onChange={(e) => setBurstTime(e.target.value)} sx={{ width: "25%", padding: "1rem" }} />
                 <TextField value={tickets} onChange={(e) => setTickets(e.target.value)} sx={{ width: "25%", padding: "1rem" }} />
             </ListItem>
-            <Button sx={{ marginTop: '1rem' }} variant="contained" onClick={handleAddProcess}>Add process</Button>
+            <Button sx={{ marginTop: '1rem' }}  onClick={handleAddProcess}>Add process</Button>
             <ListItem sx={{ marginTop: '1rem', display: "flex", width: "80%", alignItems: "center", justifyContent: "center" }}>
-                <Button sx={{ marginTop: '1rem', marginRight : "1rem" }} variant="contained">Run all and compare</Button>
-                <Button sx={{ marginTop: '1rem' }} variant="contained" onClick={() => setOpen(true)}>Run a specific algo</Button>
+                <Button component={RRLink} to='/comparison' sx={{ marginTop: '1rem', marginRight : "1rem" }} variant="contained">Run all non-ticketed and compare</Button>
+                <Button sx={{ marginTop: '1rem', marginRight : "1rem" }} variant="outlined" onClick={() => setOpen(true)}>Run a specific algo</Button>
+                <TextField sx={{marginTop: '1rem'}} size='small' label="Scheduling quantum (for fair share schedulers)" value={quantum} onChange={(e) => setQuantum(e.target.value)} />
             </ListItem>
             <Dialog open={isOpen} onClose={() => setOpen(false)}>
                 <DialogTitle sx={{textAlign : "center"}}>Choose the specific algorithm</DialogTitle>

@@ -4,6 +4,8 @@
 #include "../include/lottery_scheduling.h"
 #include "../include/shortest_ttc_first.h"
 
+std::string  file_path = "/root/scheduling-simulator/lib/outfile.txt";
+
 int main(int argc, char *argv[])
 {
     // command lin arguments in the form ```./executable -pol <policy_name>```
@@ -15,26 +17,26 @@ int main(int argc, char *argv[])
     std::string policy = argv[2];
     if (policy == "fcfs")
     {
-        fcfs::simulate();
+        fcfs::simulate(std::ios::out, file_path);
     }
-    else if (policy == "sfj")
+    else if (policy == "sjf")
     {
-        sjf::simulate();
+        sjf::simulate(std::ios::out, file_path);
+    }
+    else if (policy == "stcf")
+    {
+        stcf::simulate(std::ios::out, file_path);
     }
     else if (policy == "rr")
     {
         //round robin requires an additional argument of scheduling quantum
         if(argc < 4) return -1;
-        rr::simulate(std::string(argv[3]));
-    }
-    else if (policy == "stcf")
-    {
-        stcf::simulate();
+        rr::simulate(std::string(argv[3]), std::ios::out, file_path);
     }
     else if(policy == "lottery")
     {
         if(argc < 4) return -1;
-        lottery::simulate(std::string(argv[3]));
+        lottery::simulate(std::string(argv[3]), std::ios::out, file_path);
     }
     else
     {

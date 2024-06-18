@@ -89,11 +89,12 @@ void write_to_output_file(
     int total_comp,
     float avg_ta,
     float avg_r,
-    float avg_comp
+    float avg_comp,
+    std::ios_base::openmode mode,
+    std::string outfile_path
 )
 {
-    std::ofstream out_file;
-    out_file.open("/root/scheduling-simulator/backend/lib/outfile.txt");
+    std::ofstream out_file(outfile_path, mode);
     out_file << total_ta << " " << total_r << " " << total_comp << " " << avg_ta << " " << avg_r << " " << avg_comp << "\n";
     out_file.close();
 }

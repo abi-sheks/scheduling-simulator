@@ -25,7 +25,7 @@ namespace lottery
         return p1.process.arrival_time < p2.process.arrival_time;
     }
 
-    void simulate(std::string time_slice)
+    void simulate(std::string time_slice, std::ios_base::openmode mode, std::string file_path)
     {
         int ts = atoi(time_slice.c_str());
         std::vector<ticketed_proc> processes = get_ticketed_processes();
@@ -129,7 +129,7 @@ namespace lottery
 
         // return metrics
         std::cout << result.avg_tat << " " << result.avg_rt << " " << result.total_tat << " " << result.total_rt << "\n";
-        write_to_output_file(result.total_tat, result.total_rt, result.total_ct, result.avg_tat, result.avg_rt, result.avg_ct);
+        write_to_output_file(result.total_tat, result.total_rt, result.total_ct, result.avg_tat, result.avg_rt, result.avg_ct, mode, file_path);
     }
 
 }
